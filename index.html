@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Test</title>
+    <script src="./src/index.js" defer></script>
+</head>
+<body>
+    <h1>API Test</h1>
+    <h3>This is a test page for the API.</h3>
+    <div class="API">
+        <div class="GET">
+            <h3>Get</h3>
+            <p>Click Here To Get All The Users</p>
+            <button class="GetAll" id="GetAll">Get All Users</button>
+            <br />
+            <div>Choose An ID To Get A User:</div>
+            <select id="getOptions">
+                <option value="0" placeholder disabled selected>Select An ID</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+        <div class="POST">
+            <h3>Post</h3>
+            <form id="postForm" class="postForm">
+                <p>Create a User Here</p>
+                <label for="name">Name:</label>
+                <input type="text" id="PostName" name="name" />
+                <br />
+                <label for="email">Email:</label>
+                <input type="email" id="PostEmail" name="email" />
+                <br />
+                <label for="Role">Role:</label>
+                <select id="PostRole" name="Role">
+                    <option value="0" placeholder disabled selected>Select A Role</option>
+                    <option value="Project Manager">Project Manager</option>
+                    <option value="UX/UI Designer">UX/UI Designer</option>
+                    <option value="Front-End Developer">Front-End Developer</option>
+                    <option value="Back-End Developer">Back-End Developer</option>
+                </select>
+                <br />
+                <button type="submit">Create User</button>
+            </form>
+            <br />
+            <form class="UPDATE" id="UpdateForm">
+                <h3>Update</h3>
+                <div>Choose An ID To Update A User:</div>
+                <select id="updateOptions">
+                    <option value="0" placeholder disabled selected>Select An ID</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <p>Update The Selected User Here</p>
+                <label for="name">Name:</label>
+                <input type="text" id="UpdateName" name="name" />
+                <br />
+                <label for="email">Email:</label>
+                <input type="email" id="UpdateEmail" name="email" />
+                <br />
+                <label for="Role">Role:</label>
+                <select id="UpdateRole" name="Role">
+                    <option value="0" placeholder disabled selected>Select A Role</option>
+                    <option value="Project Manager">Project Manager</option>
+                    <option value="UX/UI Designer">UX/UI Designer</option>
+                    <option value="Front-End Developer">Front-End Developer</option>
+                    <option value="Back-End Developer">Back-End Developer</option>
+                </select>
+                <br />
+                <button type="submit">Update User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container to display fetched data -->
+    <div id="dataContainer" style="margin-top: 20px;">
+        <h3>Users:</h3>
+        <ul id="userList"></ul>
+    </div>
+
+    <script>
+        // Event listener for getting all users
+        document.getElementById("GetAll").addEventListener("click", function () {
+            fetch("http://localhost:3000/users")
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayUsers(data); // Call function to display users
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+
+        // Event listener for getting a user by ID
+        document.getElementById("getOptions").addEventListener("change", function () {
+            const selectedOption = document.getElementById("getOptions").value;
+            if (selectedOption !== "0") {
+                fetch(`http://localhost:3000/users/${selectedOption}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        displayUser(data); // Call function to display a single user
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+            }
+        });
+
+        // Event listener for POST form submission
+        document.getElementById("postForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("PostName").value;
+            const email = document.getElementById("PostEmail").value;
+            const role = document.getElementById("PostRole").value;
+
+            fetch("http://localhost:3000/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, role }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Success:", data);
+                    alert("User created successfully!");
+                    // Refresh the user list after creating a new user
+                    fetch("http://localhost:3000/users")
+                        .then(response => response.json())
+                        .then(data => {
+                            displayUsers(data);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+                    // Clear the form
+                    document.getElementById("postForm").reset();
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An error occurred while creating the user.");
+                });
+        });
+
+        // Event listener for UPDATE form submission
+        document.getElementById("UpdateForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const id = document.getElementById("updateOptions").value;
+            const name = document.getElementById("UpdateName").value;
+            const email = document.getElementById("UpdateEmail").value;
+            const role = document.getElementById("UpdateRole").value;
+
+            fetch(`http://localhost:3000/users/${id}`, {
+                method: "PUT", // Use PUT or PATCH for updates
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, role }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Success:", data);
+                    alert("User updated successfully!");
+                    // Refresh the user list after updating the user
+                    fetch("http://localhost:3000/users")
+                        .then(response => response.json())
+                        .then(data => {
+                            displayUsers(data);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+                    // Clear the form
+                    document.getElementById("UpdateForm").reset();
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An error occurred while updating the user.");
+                });
+        });
+
+        // Function to display users on the page
+        function displayUsers(users) {
+            const userList = document.getElementById("userList");
+            userList.innerHTML = ""; // Clear the list before appending new data
+
+            users.forEach(user => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `ID: ${user.ID}, Name: ${user.Name}, Email: ${user.Email}, Role: ${user.Role}`;
+                userList.appendChild(listItem);
+            });
+        }
+
+        // Function to display a single user on the page
+        function displayUser(user) {
+            const userList = document.getElementById("userList");
+            userList.innerHTML = ""; // Clear the list before appending new data
+            const listItem = document.createElement("li");
+            listItem.textContent = `ID: ${user.ID}, Name: ${user.Name}, Email: ${user.Email}, Role: ${user.Role}`;
+            userList.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
