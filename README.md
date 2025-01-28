@@ -3,8 +3,8 @@
 
 ## Requirement
 
-Node.JS
-IDE (Visual Studio Code or Visual Studio)
+- Node.JS
+- IDE (Visual Studio Code or Visual Studio)
 
 ## How To 
 
