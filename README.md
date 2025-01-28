@@ -2,7 +2,7 @@
 ___
 ## 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/your-repository.git
+git clone https://github.com/Base0005/Presentation-Express.git
 ```
 
 ## 2. Navigate to the project Terminal
