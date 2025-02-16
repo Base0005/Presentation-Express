@@ -1,8 +1,13 @@
+//Calling All Required NPM Packages
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const PORT = 3000;
 const path = require("path");
+
+//Establishing The Port Number
+const PORT = 3000;
+
+//Adding API Security Measures
 app.use(cors());
 
 // Middleware
@@ -11,8 +16,7 @@ app.use(express.json());
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, '..')));
 
-//Data
-
+//Data 
 let users = [
   {
     ID: 1,
@@ -51,6 +55,7 @@ let users = [
     Role: "Back-End Developer",
   },
 ];
+
 //Get all Users
 app.get("/users", (req, res) => {
     res.status(200).json(users)
@@ -60,15 +65,16 @@ app.get("/users", (req, res) => {
 app.get("/users/:id", (req, res) => {
     const id = parseInt(req.params.id);
     const user = users.find((user) => user.ID === id);
-    if (!user) {
+    //If User in question does NOT exist, Send a 404 Response
+    if (!user) { 
     return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json(user);
 })
-//Post a new User
+//Post (Or Create) a new User
 app.post("/users", (req, res) => {
     const { name, email, role } = req.body;
-
+    //if name, email and/or role is empty or not selected
     if (!name || !email || !role) {
     return res
         .status(400)
@@ -99,6 +105,8 @@ app.put("/users/:id", (req, res) => {
     user.Role = role || user.Role;
     res.status(200).json({ message: "User updated successfully", user });
     })
+
+// Start the Express server and listen on the specified port (Port 3000)
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/index.html`);
 });
